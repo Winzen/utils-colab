@@ -287,4 +287,4 @@ def create_file_to_pull(arch_url: str,
 
     update_dbt_project_yaml(dataset_id)
     
-    send_to_zip(output_path)
+    send_to_zip("/content/pr")
