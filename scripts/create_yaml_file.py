@@ -135,11 +135,12 @@ def update_dbt_project_yaml(dataset_id: str) -> None:
 
     url_dbt_project = "https://raw.githubusercontent.com/basedosdados/queries-basedosdados/main/dbt_project.yml"
 
-    data = yaml_obj.load(requests.get(url_dbt_project).text)
 
     yaml_obj = yaml.YAML(typ='rt')
     yaml_obj.explicit_start = True
     yaml_obj.indent(mapping=2, sequence=2, offset=2)
+
+    data = yaml_obj.load(requests.get(url_dbt_project).text)
 
     models = data['models']['basedosdados']
     models.update({dataset_id:{"+materialized":"table",
