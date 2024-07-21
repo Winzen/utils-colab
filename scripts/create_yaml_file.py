@@ -40,7 +40,10 @@ def sheet_to_df(columns_config_url_or_path: str) -> pd.DataFrame:
             "Check if your google sheet Share are: Anyone on the internet with this link can view"
         )
 
-def create_model_from_architecture(architecture_df: pd.DataFrame, output_dir: str, dataset_id: str, table_id: str, preprocessed_staging_column_names: bool = True) -> None:
+def create_model_from_architecture(architecture_df: pd.DataFrame, 
+                                   output_dir: str, output_path_view: str,
+                                   dataset_id: str, table_id: str, 
+                                   preprocessed_staging_column_names: bool = True) -> None:
 
         if preprocessed_staging_column_names:
             architecture_df['original_name'] = architecture_df['name']
@@ -48,7 +51,7 @@ def create_model_from_architecture(architecture_df: pd.DataFrame, output_dir: st
         # Temporaria parte
 
         paths = [f"{output_dir}/{dataset_id}__{table_id}.sql",
-                 f"{output_dir}-view/{dataset_id}__{table_id}.txt"]
+                 f"{output_path_view}/{dataset_id}__{table_id}.txt"]
 
         for path in paths:
             with open(path, 'w') as file:
@@ -259,6 +262,7 @@ def create_file_to_pull(arch_url: str,
 
         create_model_from_architecture(architecture_df,
                                         output_path,
+                                        output_path_view,
                                         dataset_id,
                                         id,
                                         preprocessed_staging_column_names)
