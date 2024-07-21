@@ -5,6 +5,18 @@ from typing import List, Optional, Tuple
 import requests
 from io import StringIO
 import re
+import shutil
+
+
+def send_to_zip(path_input: str, path_output: str = "") -> None:
+
+  if not len(os.listdir(path_input)) > 0:
+    raise Exception("Essa Pasta vazia")
+    return None
+
+  shutil.make_archive(path_input,
+                      'zip',
+                      path_input if path_output == "" else path_output)
 
 
 def find_model_directory(directory: str)-> Optional[str]:
@@ -274,3 +286,5 @@ def create_file_to_pull(arch_url: str,
     print(f"Files successfully created for {dataset_id}!")
 
     update_dbt_project_yaml(dataset_id)
+    
+    send_to_zip(output_path)
