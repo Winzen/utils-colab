@@ -128,15 +128,15 @@ def create_unique() -> List:
         return ["unique", "not_null"]
 
 
-def update_dbt_project_yaml(dataset_id: str,models_path: str) -> None:
-    dbt_project_path = models_path.replace('models','dbt_project.yml')
+def update_dbt_project_yaml(dataset_id: str) -> None:
+
+    url_dbt_project = "https://raw.githubusercontent.com/basedosdados/queries-basedosdados/main/dbt_project.yml"
+
+    data = yaml_obj.load(requests.get(url_dbt_project).text)
 
     yaml_obj = yaml.YAML(typ='rt')
     yaml_obj.explicit_start = True
     yaml_obj.indent(mapping=2, sequence=2, offset=2)
-
-    with open(dbt_project_path, 'r') as file:
-        data = yaml_obj.load(file)
 
     models = data['models']['basedosdados']
     models.update({dataset_id:{"+materialized":"table",
@@ -144,13 +144,13 @@ def update_dbt_project_yaml(dataset_id: str,models_path: str) -> None:
 
     data['models']['basedosdados'] = {key: models[key] for key in sorted(models)}
 
-    with open(dbt_project_path, 'w') as file:
+    with open("/content/pr/dbt_project.yml", 'w') as file:
         yaml_obj.dump(data, file)
 
     print(f"dbt_project successfully updated with {dataset_id}!")
 
     
-def create_yaml_file(arch_url: str,
+def create_file_to_pull(arch_url: str,
                      table_id: str,
                      dataset_id: str,
                      table_description: str = "Insert table description here",
@@ -186,15 +186,14 @@ def create_yaml_file(arch_url: str,
 
     """
     
-        
-    output_path = f"/content/{dataset_id}"
+    output_path = f"/content/pr/{dataset_id}"
+    output_path_view = f"/content/{dataset_id}-view"
     
     os.makedirs(output_path, exist_ok=True)
-    os.makedirs(output_path + "-view", exist_ok=True)
+    os.makedirs(output_path_view, exist_ok=True)
     
-  
     schema_path = f"{output_path}/schema.yml"
-    print(schema_path, output_path)
+    
     yaml_obj = yaml.YAML(typ='rt')
     yaml_obj.indent(mapping=4, sequence=4, offset=2)
 
@@ -269,4 +268,4 @@ def create_yaml_file(arch_url: str,
 
     print(f"Files successfully created for {dataset_id}!")
 
-    # update_dbt_project_yaml(dataset_id,models_path)
+    update_dbt_project_yaml(dataset_id)
