@@ -4,9 +4,10 @@ from gql import gql
 
 class RawData:
   
-  def __init__(self, name: str, url: str):
+  def __init__(self, name: str, url: str, datatime: dict):
     self.name = name
     self.url = url
+    self.datatime = datatime
     self.id_table = self.id_raw_source = self.id_coverage = None
 
 
@@ -128,13 +129,13 @@ def get_create_date_time_range(slot: RawData) -> None:
 
   values = {
   "coverage": slot.id_coverage, 
-  "startYear":2000, 
-  "startMonth":1, 
-  "startDay":1, 
-  "endYear":2010, 
-  "endMonth":1, 
-  "endDay":1, 
-  "interval": 1 
+  "startYear":slot.datatime["startYear"], 
+  "startMonth":slot.datatime["startMonth"], 
+  "startDay":slot.datatime["startDay"], 
+  "endYear":slot.datatime["endYear"], 
+  "endMonth":slot.datatime["endMonth"], 
+  "endDay":slot.datatime["endDay"], 
+  "interval": slot.datatime["interval"] 
   }
 
   variables = {
