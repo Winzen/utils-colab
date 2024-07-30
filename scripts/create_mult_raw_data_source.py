@@ -8,6 +8,7 @@ class RawData:
     self.name = name
     self.url = url
     self.datatime = datatime
+    self.datatime[""]
     self.id_table = self.id_raw_source = self.id_coverage = None
 
 
@@ -127,19 +128,10 @@ def get_create_date_time_range(slot: RawData) -> None:
     }
   """
 
-  values = {
-  "coverage": slot.id_coverage, 
-  "startYear":slot.datatime["startYear"], 
-  "startMonth":slot.datatime["startMonth"], 
-  "startDay":slot.datatime["startDay"], 
-  "endYear":slot.datatime["endYear"], 
-  "endMonth":slot.datatime["endMonth"], 
-  "endDay":slot.datatime["endDay"], 
-  "interval": slot.datatime["interval"] 
-  }
-
+  slot.datatime["coverage"] = slot.id_coverage
+  
   variables = {
-  "input": values
+  "input": slot.datatime
   }
 
   client.execute(gql(query), variable_values=variables)
