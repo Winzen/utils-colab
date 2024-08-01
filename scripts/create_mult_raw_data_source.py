@@ -133,9 +133,9 @@ def get_create_date_time_range(slot: RawData) -> None:
   "input": slot.datatime
   }
 
-  client.execute(gql(query), variable_values=variables)
-
-
+  response = client.execute(gql(query), variable_values=variables)
+  breakpoint()
+  
 def connect_raw_source_to_table(slot: RawData) -> None:
   
   client = MakeClient().mutation()
