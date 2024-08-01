@@ -105,7 +105,7 @@ def get_create_coverage(slot: RawData) -> None:
 
   mutation_response = client.execute(gql(query), variable_values=variables)
   id_coverve = mutation_response['CreateUpdateCoverage']['coverage']['id']
-  slot.id_coverge = clear_id(id_coverve, "CoverageNode:")
+  slot.id_coverage = clear_id(id_coverve, "CoverageNode:")
 
 
 def get_create_date_time_range(slot: RawData) -> None:
