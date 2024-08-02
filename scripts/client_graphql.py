@@ -55,7 +55,7 @@ class MakeClient:
                         messages
                     }},
                     {mutation_class.lower()} {{
-                        id,
+                        id
                     }}
                 }}
                 }}
