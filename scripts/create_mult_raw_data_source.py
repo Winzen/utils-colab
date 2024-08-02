@@ -1,4 +1,5 @@
 from client_graphql import MakeClient
+from utils import clear_id
 from gql import gql
 
 
@@ -9,11 +10,6 @@ class RawData:
     self.url = url
     self.datatime = datatime
     self.id_table = self.id_raw_source = self.id_coverage = None
-
-
-def clear_id(string: str, place: str) -> str:
-
-  return string.replace(place, "")
 
 
 def get_response_tables_from_dataset(id_dataset: str) -> list:
@@ -42,21 +38,7 @@ def get_response_tables_from_dataset(id_dataset: str) -> list:
 
 
 def get_create_raw_data(id_dataset: str, slot: RawData) -> None:
-  client = MakeClient().mutation()
-
-  query ="""
-  mutation($input: CreateUpdateRawDataSourceInput!){
-      CreateUpdateRawDataSource(input: $input){
-    errors{
-      messages
-    }
-    rawdatasource{
-      id
-    }
-    }
-  }
-  """
-
+ 
   values = {
     "dataset": id_dataset,
     "name": slot.name,
@@ -66,105 +48,39 @@ def get_create_raw_data(id_dataset: str, slot: RawData) -> None:
     "isFree": True,
     "status": "47208305-325a-4da9-9222-ac6849405b78"
       }
-
-  variables = {
-  "input": values
-  }
-
-  mutation_response = client.execute(gql(query), variable_values=variables)
-  id_raw_source = mutation_response['CreateUpdateRawDataSource']['rawdatasource']['id']
-  slot.id_raw_source = clear_id(id_raw_source, "RawDataSourceNode:")
+  
+  slot.id_raw_source = MakeClient().query_mutation(mutation_class="RawDataSource", 
+                                                   input_values=values, only_id=True)
 
 
 def get_create_coverage(slot: RawData) -> None:
   
-  client = MakeClient().mutation()
-
-  query = """
-  mutation($input: CreateUpdateCoverageInput!) {
-    CreateUpdateCoverage(input: $input) {
-      errors {
-        messages
-        field
-      }
-      coverage {
-        id
-      }
-    }
-  }
-  """ 
-
   values = {
   "rawDataSource": slot.id_raw_source,
   "area": "5503dd29-4d9b-483b-ae09-63dc8ed28875"
   }
 
-  variables = {
-  "input": values
-  }
-
-  mutation_response = client.execute(gql(query), variable_values=variables)
-  id_coverve = mutation_response['CreateUpdateCoverage']['coverage']['id']
-  slot.id_coverage = clear_id(id_coverve, "CoverageNode:")
-
+  slot.id_coverage = MakeClient().query_mutation(mutation_class="Coverage", 
+                                                  input_values=values, only_id=True)
+  
 
 def get_create_date_time_range(slot: RawData) -> None:
   
-  client = MakeClient().mutation()
-
-  query = """
-  mutation($input: CreateUpdateDateTimeRangeInput!){
-    CreateUpdateDateTimeRange(input: $input) {
-      errors {
-        messages
-        field
-      }
-      datetimerange
-      {
-        id
-      }
-      }
-    }
-  """
-
   slot.datatime["coverage"] = slot.id_coverage
   
-  variables = {
-  "input": slot.datatime
-  }
-
-  response = client.execute(gql(query), variable_values=variables)
+  MakeClient().query_mutation(mutation_class="DateTimeRange", 
+                              input_values=slot.datatime)
 
 
 def connect_raw_source_to_table(slot: RawData) -> None:
   
-  client = MakeClient().mutation()
-
-  query = """
-  mutation($input: CreateUpdateTableInput!){
-    CreateUpdateTable(input: $input) {
-      errors {
-        messages
-        field
-      }
-      table
-      {
-        id
-      }
-      }
-  }
-  """
-
   values = {
       "id": slot.id_table, 
       "rawDataSource": slot.id_raw_source
       }
 
-  variables = {
-  "input": values
-  }
-
-  client.execute(gql(query), variable_values=variables)
+  MakeClient().query_mutation(mutation_class="Table", 
+                              input_values=values)
 
 
 def create_mult_raw_data_source(id_dataset: str, tables: dict) -> None:

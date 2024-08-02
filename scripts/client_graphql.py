@@ -3,7 +3,7 @@ from google.colab import userdata
 from gql.transport.requests import RequestsHTTPTransport
 from google.colab import userdata
 from typing import Dict
-
+from utils import extract_id_from_response
 
 class MakeClient:
   def __init__(self):
@@ -42,6 +42,36 @@ class MakeClient:
 
     return self.make_client(header_for_mutation_query)
 
+
+  def query_mutation(self, mutation_class: str, input_values: dict, only_id: bool = False) -> str|dict:
+
+    client = self.mutation()
+
+    query = f"""
+                mutation($input:{mutation_class}Input!){{
+                    {mutation_class}(input: $input){{
+                    errors {{
+                        field,
+                        messages
+                    }},
+                    {mutation_class.lower()} {{
+                        id,
+                    }}
+                }}
+                }}
+              """
+    
+    variables = {"input": input_values}
+
+    mutation_response = client.execute(gql(query), variable_values=variables)
+    
+    if only_id:
+      return extract_id_from_response(mutation_response, mutation_class)
+    
+    return mutation_response
+
+
+# Funçoes para para trocar tirar "-dev" do nome dos projetos
 
 def change_projectid_cloud_table(id_cloud: str, gcpProjectId: str) -> None:
 
