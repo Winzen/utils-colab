@@ -48,8 +48,8 @@ class MakeClient:
     client = self.mutation()
 
     query = f"""
-                mutation($input:{mutation_class}Input!){{
-                    {mutation_class}(input: $input){{
+                mutation($input:CreateUpdate{mutation_class}Input!){{
+                    CreateUpdate{mutation_class}(input: $input){{
                     errors {{
                         field,
                         messages
